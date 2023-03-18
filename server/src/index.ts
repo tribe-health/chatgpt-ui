@@ -3,6 +3,8 @@ require('dotenv').config()
 import express from 'express';
 import compression from 'compression';
 import fs from 'fs';
+import https from 'https';
+import http from 'http';
 import path from 'path';
 import S3ObjectStore from './object-store/s3';
 import { SQLiteAdapter } from './database/sqlite';
@@ -22,6 +24,7 @@ import { configurePassport } from './passport';
 import { configureAuth0 } from './auth0';
 import DeleteChatRequestHandler from './endpoints/delete-chat';
 
+
 process.on('unhandledRejection', (reason, p) => {
     console.error('Unhandled Rejection at: Promise', p, 'reason:', reason);
 });
@@ -33,6 +36,11 @@ if (process.env.CI) {
 const port = process.env.PORT ? parseInt(process.env.PORT, 10) : 3001;
 const webappPort = process.env.WEBAPP_PORT ? parseInt(process.env.WEBAPP_PORT, 10) : 3000;
 const origins = (process.env.ALLOWED_ORIGINS || '').split(',');
+
+const certPath = path.join(__dirname, '..', 'certs');
+const privateKeyFile = path.join(certPath, 'privkey.pem');
+const certificateFile = path.join(certPath, 'fullchain.pem');
+
 
 if (process.env['GITPOD_WORKSPACE_URL']) {
     origins.push(
@@ -100,13 +108,27 @@ export default class ChatServer {
         await this.objectStore.initialize();
         await this.database.initialize();
 
-        try {
-            this.app.listen(port, () => {
-                console.log(`Listening on port ${port}.`);
-            });
-        } catch (e) {
-            console.log(e);
-        }
+              let server;
+
+              if (fs.existsSync(privateKeyFile) && fs.existsSync(certificateFile)) {
+                const privateKey = fs.readFileSync(privateKeyFile, 'utf8');
+                const certificate = fs.readFileSync(certificateFile, 'utf8');
+        
+                const credentials = { key: privateKey, cert: certificate };
+                server = https.createServer(credentials, this.app);
+                console.log('Using HTTPS.');
+            } else {
+                server = http.createServer(this.app);
+                console.log('Using HTTP. Certificates not found.');
+            }
+        
+            try {
+                server.listen(port, () => {
+                    console.log(`Listening on port ${port}.`);
+                });
+            } catch (e) {
+                console.log(e);
+            }
     }
 }
 

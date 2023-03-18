@@ -2,6 +2,7 @@
 *.db
 .gitpod.yml
 
+*.pem
 # Logs
 logs
 *.log

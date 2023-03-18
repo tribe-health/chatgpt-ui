@@ -1,0 +1,9 @@
+IMPORTANT: Please place the following files in this 'certs' folder:
+
+1. privkey.pem - The private key for your domain, provided by Let's Encrypt.
+2. fullchain.pem - The full certificate chain for your domain, provided by Let's Encrypt.
+
+These files are required to enable HTTPS for your application. Make sure to keep your private key secure and never share it with anyone.
+
+For more information on obtaining the necessary certificates from Let's Encrypt, please visit their documentation:
+https://letsencrypt.org/docs/
