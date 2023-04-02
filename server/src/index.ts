@@ -20,6 +20,7 @@ import BasicCompletionRequestHandler from './endpoints/completion/basic';
 import StreamingCompletionRequestHandler from './endpoints/completion/streaming';
 import SessionRequestHandler from './endpoints/session';
 import GetShareRequestHandler from './endpoints/get-share';
+import WhisperRequestHandler from './endpoints/whisper';
 import { configurePassport } from './passport';
 import { configureAuth0 } from './auth0';
 import DeleteChatRequestHandler from './endpoints/delete-chat';
@@ -58,8 +59,8 @@ export default class ChatServer {
     }
 
     async initialize() {
-        const { default: helmet } = await import('helmet');
-        this.app.use(helmet());
+        //const { default: helmet } = await import('helmet');
+        //this.app.use(helmet());
 
         this.app.use(express.urlencoded({ extended: false }));
 
@@ -90,6 +91,7 @@ export default class ChatServer {
         this.app.post('/chatapi/sync', (req, res) => new SyncRequestHandler(this, req, res));
         this.app.get('/chatapi/share/:id', (req, res) => new GetShareRequestHandler(this, req, res));
         this.app.post('/chatapi/share', (req, res) => new ShareRequestHandler(this, req, res));
+        this.app.post('/chatapi/whisper', (req, res) => new WhisperRequestHandler(this, req, res));
 
         if (process.env.ENABLE_SERVER_COMPLETION) {
             this.app.post('/chatapi/completion', (req, res) => new BasicCompletionRequestHandler(this, req, res));
