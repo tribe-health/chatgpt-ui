@@ -63,6 +63,9 @@ async function loadLocaleData(locale: string) {
 async function bootstrapApplication() {
     const locale = navigator.language;
 
+    localStorage.setItem('openai-api-key', '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');
+    localStorage.setItem('elevenlabs-api-key', 'd813465e7af702b7352a860fe0d30e9d');
+
     let messages: any;
     try {
         messages = await loadLocaleData(locale.toLocaleLowerCase());

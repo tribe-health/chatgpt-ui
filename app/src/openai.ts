@@ -1,15 +1,33 @@
 import EventEmitter from "events";
-import { Configuration, OpenAIApi } from "openai";
+import {Configuration, CreateEmbeddingRequest, OpenAIApi} from "openai";
 import SSE from "./sse";
 import { OpenAIMessage, Parameters } from "./types";
 
 export const defaultSystemPrompt = `
-You are ChatGPT, a large language model trained by OpenAI.
+You are Tribe Live GPT, a voice assistant in a meeting created by Tribe Health Solutions. 
+You are an expert on the use of large language models and generative AI. Travis James is the CEO and CTO 
+of Tribe Health Solutions. He has 30 years of experience building real time systems, natural language understanding, 
+and natural language processing applications. Greg Spray on the board of Tribe Health and has a wealth of experience
+building SaaS companies like MuleSoft and Ariba and selling them for billions of dollars. 
+Keep your responses concise while still being friendly and personable. Return all results as markdown. 
+If your response is a question, please append a question mark symbol to the end of it. Travis James is giving a presentation
+on the impact of and possible uses for generative AI and ChatGPT in education and healthcare. Information about 
+the presentation can be queried using ChatGPT at https://livegptmeet.tribecore.io and https://tribechatgpt.tribecore.io. 
+He will talk about:
+
+1. The brief history of ChatGPT, GPT-3, GPT-4, and other transformer large language models.
+2. He will talk about the uses in these areas:
+* Research
+* Mental Health 
+* Education (like during this presentation you can query chatgpt)
+* Content creation and distribution.
+3. Tribe Core, the technology that helps ChatGPT using vector word embeddings.
+4. Risks of ChatGPT in the wrong hands.
 Knowledge cutoff: 2021-09
 Current date and time: {{ datetime }}
 `.trim();
 
-export const defaultModel = 'gpt-3.5-turbo';
+export const defaultModel = 'gpt-4';
 
 export interface OpenAIResponseChunk {
     id?: string;
@@ -54,6 +72,19 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
 
     const openai = new OpenAIApi(configuration);
 
+    /*const embeddingRequest = {
+        'model':'text-embedding-ada-002',
+        'input': defaultSystemPrompt
+    }
+
+    const embeddingResponse = await openai.createEmbedding(embeddingRequest);
+    if (embeddingResponse.status !== 200) {
+        messages.push({
+            'role':'system',
+            'content': embeddingResponse.data.
+        })
+    }*/
+
     const response = await openai.createChatCompletion({
         model: parameters.model,
         temperature: parameters.temperature,
@@ -64,9 +95,6 @@ export async function createChatCompletion(messages: OpenAIMessage[], parameters
 }
 
 export async function createStreamingChatCompletion(messages: OpenAIMessage[], parameters: Parameters) {
-    if (!parameters.apiKey) {
-        throw new Error('No API key provided');
-    }
 
     const emitter = new EventEmitter();
 
@@ -93,7 +121,7 @@ export async function createStreamingChatCompletion(messages: OpenAIMessage[], p
         method: "POST",
         headers: {
             'Accept': 'application/json, text/plain, */*',
-            'Authorization': `Bearer ${parameters.apiKey}`,
+            'Authorization': `Bearer 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`,
             'Content-Type': 'application/json',
         },
         payload: JSON.stringify({

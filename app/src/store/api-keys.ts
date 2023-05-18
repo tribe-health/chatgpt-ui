@@ -7,9 +7,9 @@ const initialState: {
     elevenLabsApiKey?: string | null | undefined;
 
 } = {
-    openAIApiKey: localStorage.getItem('openai-api-key'),
+    openAIApiKey: localStorage.getItem('openai-api-key') ?? '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',
     useOpenAIWhisper: false,
-    elevenLabsApiKey: localStorage.getItem('elevenlabs-api-key'),
+    elevenLabsApiKey: localStorage.getItem('elevenlabs-api-key') ?? 'd813465e7af702b7352a860fe0d30e9d',
 };
 
 export const apiKeysSlice = createSlice({

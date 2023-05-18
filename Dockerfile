@@ -36,8 +36,6 @@ RUN apk add --update --no-cache python3 py3-pip make g++ git
 RUN npm install
 
 # Copy Let's Encrypt certificates
-COPY ./certs/fullchain.pem ./certs/fullchain.pem
-COPY ./certs/privkey.pem ./certs/privkey.pem
 COPY ./server/src ./src
 
 RUN CI=true sh -c "cd /app && mkdir data && npm run start && rm -rf data"
@@ -45,6 +43,6 @@ RUN CI=true sh -c "cd /app && mkdir data && npm run start && rm -rf data"
 COPY --from=build /app/build /app/public
 
 LABEL org.opencontainers.image.source="https://github.com/cogentapps/chat-with-gpt"
-ENV PORT 3000
+ENV PORT 3434
 
 CMD ["npm", "run", "start"]
